@@ -14,20 +14,32 @@ public final class Config {
             .define("vectorNoise", false);
 
     public static final ModConfigSpec.BooleanValue ADAPTIVE_RENDER_DISTANCE = BUILDER
-            .comment("Gradually lowers render distance when FPS stays low and restores it when performance recovers.")
-            .define("adaptiveRenderDistance", true);
+            .comment("Opt in to gradually lowering and restoring render distance based on sampled FPS.")
+            .define("adaptiveRenderDistance", false);
 
     public static final ModConfigSpec.IntValue TARGET_FPS = BUILDER
             .comment("FPS threshold below which render distance may be reduced.")
-            .defineInRange("targetFps", 60, 30, 240);
+            .defineInRange("targetFps", 45, 30, 240);
 
     public static final ModConfigSpec.IntValue RECOVERY_FPS_MARGIN = BUILDER
             .comment("FPS above the target required before render distance is restored.")
-            .defineInRange("recoveryFpsMargin", 15, 5, 120);
+            .defineInRange("recoveryFpsMargin", 13, 5, 120);
 
     public static final ModConfigSpec.IntValue MIN_RENDER_DISTANCE = BUILDER
             .comment("Lowest render distance the adaptive controller may use.")
             .defineInRange("minRenderDistance", 6, 2, 32);
+
+    public static final ModConfigSpec.IntValue DOWN_SAMPLES = BUILDER
+            .comment("Low-FPS samples required before reducing render distance.")
+            .defineInRange("downSamples", 3, 1, 30);
+
+    public static final ModConfigSpec.IntValue UP_SAMPLES = BUILDER
+            .comment("High-FPS samples required before restoring render distance.")
+            .defineInRange("upSamples", 10, 1, 60);
+
+    public static final ModConfigSpec.IntValue COOLDOWN_MS = BUILDER
+            .comment("Minimum time between adaptive render-distance changes.")
+            .defineInRange("cooldownMs", 5000, 1000, 60000);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 

@@ -1,7 +1,10 @@
 package com.redondoguibi.whyisofastnow;
 
-import net.minecraft.util.Mth;
-
+/**
+ * Allocation-free scalar implementation of vanilla's improved Perlin noise.
+ *
+ * <p>This remains the compatibility fallback when the optional Vector API is unavailable.</p>
+ */
 public final class ScalarNoiseKernel implements NoiseKernel {
     public static final ScalarNoiseKernel INSTANCE = new ScalarNoiseKernel();
 
@@ -28,6 +31,16 @@ public final class ScalarNoiseKernel implements NoiseKernel {
     }
 
     @Override
+    public String id() {
+        return "scalar";
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
+
+    @Override
     public double sample(byte[] permutation, int gridX, int gridY, int gridZ, double deltaX, double weirdDeltaY, double deltaZ, double deltaY) {
         int i = permutation[gridX & 0xFF] & 0xFF;
         int j = permutation[(gridX + 1) & 0xFF] & 0xFF;
@@ -44,10 +57,10 @@ public final class ScalarNoiseKernel implements NoiseKernel {
         double d5 = gradDot(permutation[(i1 + gridZ + 1) & 0xFF] & 0xFF, deltaX - 1.0, weirdDeltaY, deltaZ - 1.0);
         double d6 = gradDot(permutation[(l + gridZ + 1) & 0xFF] & 0xFF, deltaX, weirdDeltaY - 1.0, deltaZ - 1.0);
         double d7 = gradDot(permutation[(j1 + gridZ + 1) & 0xFF] & 0xFF, deltaX - 1.0, weirdDeltaY - 1.0, deltaZ - 1.0);
-        double d8 = Mth.smoothstep(deltaX);
-        double d9 = Mth.smoothstep(deltaY);
-        double d10 = Mth.smoothstep(deltaZ);
-        return Mth.lerp3(d8, d9, d10, d0, d1, d2, d3, d4, d5, d6, d7);
+        double d8 = NoiseMath.smoothstep(deltaX);
+        double d9 = NoiseMath.smoothstep(deltaY);
+        double d10 = NoiseMath.smoothstep(deltaZ);
+        return NoiseMath.lerp3(d8, d9, d10, d0, d1, d2, d3, d4, d5, d6, d7);
     }
 
     private static double gradDot(int gradIndex, double xFactor, double yFactor, double zFactor) {

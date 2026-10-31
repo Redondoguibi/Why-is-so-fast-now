@@ -9,5 +9,8 @@
   "whyissofastnow.configuration.adaptiveRenderDistance": "Distância de renderização adaptativa",
   "whyissofastnow.configuration.targetFps": "FPS alvo",
   "whyissofastnow.configuration.recoveryFpsMargin": "Margem de FPS para recuperação",
-  "whyissofastnow.configuration.minRenderDistance": "Distância mínima de renderização"
+  "whyissofastnow.configuration.minRenderDistance": "Distância mínima de renderização",
+  "whyissofastnow.configuration.downSamples": "Amostras de FPS baixo para reduzir distância",
+  "whyissofastnow.configuration.upSamples": "Amostras de FPS alto para restaurar distância",
+  "whyissofastnow.configuration.cooldownMs": "Intervalo entre mudanças de distância (ms)"
 }

@@ -6,17 +6,20 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
+/**
+ * Samples client FPS and applies the adaptive controller's gradual distance changes.
+ *
+ * <p>The user's preferred distance is restored when the feature is disabled or the world closes.</p>
+ */
 @EventBusSubscriber(modid = Whyissofastnow.MODID, value = Dist.CLIENT)
 public final class AdaptiveRenderDistance {
     private static final int SAMPLE_INTERVAL_TICKS = 20;
-    private static final int LOW_FPS_SAMPLES_TO_REDUCE = 3;
-    private static final int HIGH_FPS_SAMPLES_TO_RESTORE = 10;
 
     private static int ticksUntilSample;
-    private static int lowFpsSamples;
-    private static int highFpsSamples;
     private static int preferredRenderDistance = -1;
     private static int lastAppliedRenderDistance = -1;
+    private static ControllerSettings controllerSettings;
+    private static AdaptiveRenderController controller;
 
     private AdaptiveRenderDistance() {
     }
@@ -38,44 +41,44 @@ public final class AdaptiveRenderDistance {
         if (lastAppliedRenderDistance < 0 || currentDistance != lastAppliedRenderDistance) {
             preferredRenderDistance = currentDistance;
             lastAppliedRenderDistance = currentDistance;
-            lowFpsSamples = 0;
-            highFpsSamples = 0;
+            configureController();
+            controller.reset();
         }
+        configureController();
 
         int fps = minecraft.getFps();
         if (fps <= 0) {
             return;
         }
-
-        if (fps < Config.TARGET_FPS.get()) {
-            lowFpsSamples++;
-            highFpsSamples = 0;
-            if (lowFpsSamples >= LOW_FPS_SAMPLES_TO_REDUCE) {
-                int minimum = Math.min(Config.MIN_RENDER_DISTANCE.get(), preferredRenderDistance);
-                if (currentDistance > minimum) {
-                    applyDistance(minecraft, currentDistance - 1);
-                }
-                lowFpsSamples = 0;
-            }
-            return;
-        }
-
-        lowFpsSamples = 0;
-        int recoveryFps = Config.TARGET_FPS.get() + Config.RECOVERY_FPS_MARGIN.get();
-        if (fps >= recoveryFps && currentDistance < preferredRenderDistance) {
-            highFpsSamples++;
-            if (highFpsSamples >= HIGH_FPS_SAMPLES_TO_RESTORE) {
-                applyDistance(minecraft, currentDistance + 1);
-                highFpsSamples = 0;
-            }
-        } else {
-            highFpsSamples = 0;
+        int minimum = Math.min(Config.MIN_RENDER_DISTANCE.get(), preferredRenderDistance);
+        int nextDistance = controller.update(
+                fps,
+                currentDistance,
+                minimum,
+                preferredRenderDistance,
+                System.nanoTime() / 1_000_000L);
+        if (nextDistance != currentDistance) {
+            minecraft.options.renderDistance().set(nextDistance);
+            lastAppliedRenderDistance = nextDistance;
         }
     }
 
-    private static void applyDistance(Minecraft minecraft, int distance) {
-        minecraft.options.renderDistance().set(distance);
-        lastAppliedRenderDistance = distance;
+    private static void configureController() {
+        ControllerSettings next = new ControllerSettings(
+                Config.TARGET_FPS.get(),
+                Config.TARGET_FPS.get() + Config.RECOVERY_FPS_MARGIN.get(),
+                Config.DOWN_SAMPLES.get(),
+                Config.UP_SAMPLES.get(),
+                Config.COOLDOWN_MS.get());
+        if (!next.equals(controllerSettings)) {
+            controllerSettings = next;
+            controller = new AdaptiveRenderController(
+                    next.lowThreshold(),
+                    next.highThreshold(),
+                    next.downSamples(),
+                    next.upSamples(),
+                    next.cooldownMs());
+        }
     }
 
     private static void reset(Minecraft minecraft) {
@@ -85,9 +88,18 @@ public final class AdaptiveRenderDistance {
             minecraft.options.renderDistance().set(preferredRenderDistance);
         }
         ticksUntilSample = 0;
-        lowFpsSamples = 0;
-        highFpsSamples = 0;
         preferredRenderDistance = -1;
         lastAppliedRenderDistance = -1;
+        if (controller != null) {
+            controller.reset();
+        }
+    }
+
+    private record ControllerSettings(
+            int lowThreshold,
+            int highThreshold,
+            int downSamples,
+            int upSamples,
+            int cooldownMs) {
     }
 }

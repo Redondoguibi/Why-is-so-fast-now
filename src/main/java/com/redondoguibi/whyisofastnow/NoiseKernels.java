@@ -1,35 +1,37 @@
 package com.redondoguibi.whyisofastnow;
 
-import java.lang.reflect.InvocationTargetException;
-
+/**
+ * Selects configured kernels while preserving vanilla behavior when all optimizations are off.
+ *
+ * <p>Active selection is refreshed on config load/reload, rather than doing config lookups inside
+ * the hot noise call.</p>
+ */
 public final class NoiseKernels {
-    private static final boolean VECTOR_MODULE_PRESENT = ModuleLayer.boot().findModule("jdk.incubator.vector").isPresent();
+    private static volatile NoiseKernel activeKernel;
 
     private NoiseKernels() {
     }
 
+    /** Returns the vector kernel only when its module-backed implementation is available. */
     public static NoiseKernel vectorKernel() {
-        if (!VECTOR_MODULE_PRESENT) {
-            return null;
-        }
-        return VectorHolder.INSTANCE;
+        return VectorNoiseKernel.INSTANCE.isAvailable() ? VectorNoiseKernel.INSTANCE : null;
     }
 
-    private static NoiseKernel loadVectorKernel() {
-        try {
-            Class<?> kernelClass = Class.forName(
-                    "com.redondoguibi.whyisofastnow.VectorNoiseKernel",
-                    true,
-                    NoiseKernels.class.getClassLoader());
-            return (NoiseKernel) kernelClass.getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
-                 | InstantiationException | InvocationTargetException | LinkageError | SecurityException exception) {
-            Whyissofastnow.LOGGER.warn("Vector API noise is unavailable; using the selected Java fallback.", exception);
-            return null;
+    /** Returns the currently selected kernel, or {@code null} to retain the vanilla path. */
+    public static NoiseKernel activeKernel() {
+        return activeKernel;
+    }
+
+    static void refreshFromConfig() {
+        activeKernel = null;
+        if (Config.VECTOR_NOISE.get()) {
+            activeKernel = VectorNoiseKernel.INSTANCE;
+        } else if (Config.SCALAR_NOISE.get()) {
+            activeKernel = ScalarNoiseKernel.INSTANCE;
         }
     }
 
-    private static final class VectorHolder {
-        private static final NoiseKernel INSTANCE = loadVectorKernel();
+    static void clearActiveKernel() {
+        activeKernel = null;
     }
 }

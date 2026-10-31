@@ -10,11 +10,24 @@ As opções `scalarNoise` e `vectorNoise` ficam desativadas por padrão até que
 
 ## Desempenho adaptativo do cliente
 
-O mod monitora o FPS enquanto um mundo está aberto. Se ficar abaixo do alvo por três amostras consecutivas, reduz a distância de renderização em um chunk. Quando o FPS supera o alvo mais a margem de recuperação por dez amostras, aumenta-a gradualmente até o valor preferido. O recurso pode ser desligado na tela de configuração.
+O recurso é desligado por padrão. Quando ativado, monitora o FPS enquanto um mundo está aberto. Abaixo de 45 FPS após três amostras, reduz a distância em um chunk; acima de 58 FPS após dez amostras, recupera um chunk. Há um cooldown padrão de cinco segundos entre mudanças, e amostras na zona intermediária reduzem gradualmente os streaks.
+
+## Compatibilidade testada
+
+| Mod | Resultado | Versão testada / observações |
+|---|---|---|
+| Sodium |  |  |
+| Embeddium |  |  |
+| Canary |  |  |
+| ModernFix |  |  |
+
+## Diagnóstico
+
+Use `/whyfast status` para ver os toggles e a disponibilidade da Vector API. `/whyfast benchmark` executa um teste local de 200 iterações de aquecimento e 2.000 de medição com lotes de 256 amostras; não representa uma medição Spark de geração de mundo.
 
 ## Limites e próximos passos
 
-O resultado dos kernels é verificado bit a bit contra `ImprovedNoise` vanilla para seeds e coordenadas determinísticas. Isso confirma a equivalência numérica, não um ganho de velocidade. Os resultados de perfil antes/depois ainda precisam ser medidos; consulte [PERFORMANCE.md](./PERFORMANCE.md).
+O resultado dos kernels é verificado bit a bit contra `ImprovedNoise` vanilla para uma seed e coordenadas determinísticas. Isso confirma a equivalência numérica, não um ganho de velocidade. Os resultados de perfil antes/depois ainda precisam ser medidos; consulte [PERFORMANCE.md](./PERFORMANCE.md).
 
 Ainda não há otimizações de alocação por Mixin. No vanilla 1.21.1, `BlockCollisions` já reutiliza um único `MutableBlockPos` durante cada varredura; reutilizar listas sem identificar um ponto quente e suas regras de escape seria inseguro. Não há backend C++; ele só deve ser considerado se um perfil posterior demonstrar uma conta numérica cara e vetorizável em lote.
 

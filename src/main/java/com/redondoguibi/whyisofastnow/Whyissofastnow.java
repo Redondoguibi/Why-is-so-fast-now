@@ -15,6 +15,7 @@ public class Whyissofastnow {
 
     public Whyissofastnow(ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        HotPathRegistry.GLOBAL.register(new NoiseKernelHotPath());
         LOGGER.info("Why is so fast now? loaded");
     }
 }

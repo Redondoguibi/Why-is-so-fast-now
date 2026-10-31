@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'me.champeau.jmh' version '0.7.2'
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+sourceSets.main.java {
+    srcDir file('..\\src\\main\\java')
+    include 'com/redondoguibi/whyisofastnow/NoiseKernel.java'
+    include 'com/redondoguibi/whyisofastnow/NoiseMath.java'
+    include 'com/redondoguibi/whyisofastnow/NoiseBenchmarkData.java'
+    include 'com/redondoguibi/whyisofastnow/ScalarNoiseKernel.java'
+    include 'com/redondoguibi/whyisofastnow/VectorNoiseKernel.java'
+    include 'com/redondoguibi/whyisofastnow/IncubatorVectorNoiseKernel.java'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.compilerArgs.addAll(['--add-modules', 'jdk.incubator.vector'])
+}
+
+jmh {
+    jvmArgs = ['--add-modules=jdk.incubator.vector']
+}

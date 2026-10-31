@@ -6,10 +6,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 
-import com.redondoguibi.whyisofastnow.Config;
 import com.redondoguibi.whyisofastnow.NoiseKernel;
 import com.redondoguibi.whyisofastnow.NoiseKernels;
-import com.redondoguibi.whyisofastnow.ScalarNoiseKernel;
 
 @Mixin(ImprovedNoise.class)
 public abstract class ImprovedNoiseMixin {
@@ -28,22 +26,9 @@ public abstract class ImprovedNoiseMixin {
             double deltaZ,
             double deltaY) {
         ImprovedNoiseAccessor accessor = (ImprovedNoiseAccessor) (Object) noise;
-        if (Config.VECTOR_NOISE.get()) {
-            NoiseKernel vectorKernel = NoiseKernels.vectorKernel();
-            if (vectorKernel != null) {
-                return vectorKernel.sample(
-                        accessor.whyissofastnow$getPermutation(),
-                        gridX,
-                        gridY,
-                        gridZ,
-                        deltaX,
-                        weirdDeltaY,
-                        deltaZ,
-                        deltaY);
-            }
-        }
-        if (Config.SCALAR_NOISE.get()) {
-            return ScalarNoiseKernel.INSTANCE.sample(
+        NoiseKernel kernel = NoiseKernels.activeKernel();
+        if (kernel != null) {
+            return kernel.sample(
                     accessor.whyissofastnow$getPermutation(),
                     gridX,
                     gridY,
