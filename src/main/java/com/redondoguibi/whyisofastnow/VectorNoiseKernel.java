@@ -7,24 +7,6 @@ import net.minecraft.util.Mth;
 
 public final class VectorNoiseKernel implements NoiseKernel {
     private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
-    private static final int[][] GRADIENT = {
-            {1, 1, 0},
-            {-1, 1, 0},
-            {1, -1, 0},
-            {-1, -1, 0},
-            {1, 0, 1},
-            {-1, 0, 1},
-            {1, 0, -1},
-            {-1, 0, -1},
-            {0, 1, 1},
-            {0, -1, 1},
-            {0, 1, -1},
-            {0, -1, -1},
-            {1, 1, 0},
-            {0, -1, 1},
-            {-1, 1, 0},
-            {0, -1, -1}
-    };
     private static final ThreadLocal<Scratch> SCRATCH = ThreadLocal.withInitial(Scratch::new);
 
     public VectorNoiseKernel() {
@@ -68,10 +50,10 @@ public final class VectorNoiseKernel implements NoiseKernel {
     }
 
     private static void setCorner(Scratch scratch, int corner, int gradientIndex, double x, double y, double z) {
-        int[] gradient = GRADIENT[gradientIndex & 15];
-        scratch.gradientX[corner] = gradient[0];
-        scratch.gradientY[corner] = gradient[1];
-        scratch.gradientZ[corner] = gradient[2];
+        int g = gradientIndex & 15;
+        scratch.gradientX[corner] = NoiseGradients.X[g];
+        scratch.gradientY[corner] = NoiseGradients.Y[g];
+        scratch.gradientZ[corner] = NoiseGradients.Z[g];
         scratch.offsetX[corner] = x;
         scratch.offsetY[corner] = y;
         scratch.offsetZ[corner] = z;

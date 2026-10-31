@@ -8,7 +8,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="Redondoguibi"
 description='''
-Performance experiments with exact-output scalar noise and an optional Java Vector API kernel. Optimizations remain configurable and fall back to vanilla when disabled or unavailable.
+Performance mod: adaptive render distance (lowers it when FPS stays low, restores it when it recovers) plus experimental, bit-exact noise kernels (scalar and optional Java Vector API). Every optimization is configurable and falls back to vanilla.
 '''
 
 [[mixins]]

@@ -5,25 +5,6 @@ import net.minecraft.util.Mth;
 public final class ScalarNoiseKernel implements NoiseKernel {
     public static final ScalarNoiseKernel INSTANCE = new ScalarNoiseKernel();
 
-    private static final int[][] GRADIENT = {
-            {1, 1, 0},
-            {-1, 1, 0},
-            {1, -1, 0},
-            {-1, -1, 0},
-            {1, 0, 1},
-            {-1, 0, 1},
-            {1, 0, -1},
-            {-1, 0, -1},
-            {0, 1, 1},
-            {0, -1, 1},
-            {0, 1, -1},
-            {0, -1, -1},
-            {1, 1, 0},
-            {0, -1, 1},
-            {-1, 1, 0},
-            {0, -1, -1}
-    };
-
     private ScalarNoiseKernel() {
     }
 
@@ -51,7 +32,7 @@ public final class ScalarNoiseKernel implements NoiseKernel {
     }
 
     private static double gradDot(int gradIndex, double xFactor, double yFactor, double zFactor) {
-        int[] gradient = GRADIENT[gradIndex & 15];
-        return (double) gradient[0] * xFactor + (double) gradient[1] * yFactor + (double) gradient[2] * zFactor;
+        int g = gradIndex & 15;
+        return NoiseGradients.X[g] * xFactor + NoiseGradients.Y[g] * yFactor + NoiseGradients.Z[g] * zFactor;
     }
 }

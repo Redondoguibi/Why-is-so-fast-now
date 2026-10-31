@@ -1,21 +1,27 @@
 # Why is so fast now?
 
-Mod de desempenho experimental para Minecraft Java 1.21.1 e NeoForge.
+Mod de performance para **Minecraft 1.21.1 (NeoForge 21.1.x, Java 21)**.
 
-## Ruído
+## Recursos
 
-Há um kernel escalar Java sem alocações por amostra e uma implementação opcional com a Vector API do Java 21. Ambos substituem somente o cálculo dos oito produtos escalares usados pela interpolação do ruído Perlin. A ordem das operações e a interpolação vanilla são preservadas.
+| Recurso | Padrão | Observação |
+|---|---|---|
+| Distância de renderização adaptativa | ligado | Reduz 1 chunk por vez quando o FPS fica abaixo do alvo e restaura quando se recupera. Só cliente. |
+| Ruído escalar (`scalarNoise`) | desligado | Kernel sem alocação, idêntico bit a bit ao vanilla. Ligue só após medir. |
+| Ruído vetorial (`vectorNoise`) | desligado | Experimental. Exige `--add-modules=jdk.incubator.vector` na JVM; sem isso cai para escalar/vanilla. |
 
-As opções `scalarNoise` e `vectorNoise` ficam desativadas por padrão até que um perfil Spark e os testes de equivalência justifiquem ativá-las. Se ambas estiverem habilitadas, o kernel vetorial tem prioridade; se o módulo `jdk.incubator.vector` não estiver disponível, o mod usa o kernel escalar quando habilitado e, caso contrário, deixa o método vanilla executar.
+Tudo é configurável em `config/whyissofastnow-common.toml`.
 
-## Desempenho adaptativo do cliente
+## Garantias
 
-O mod monitora o FPS enquanto um mundo está aberto. Se ficar abaixo do alvo por três amostras consecutivas, reduz a distância de renderização em um chunk. Quando o FPS supera o alvo mais a margem de recuperação por dez amostras, aumenta-a gradualmente até o valor preferido. O recurso pode ser desligado na tela de configuração.
+- Mesma seed gera o mesmo mundo: `NoiseKernelParityTest` compara os bits com o `ImprovedNoise` vanilla.
+- Antes de a config carregar, e se algo não estiver disponível, o jogo usa o caminho vanilla.
 
-## Limites e próximos passos
+## Desenvolvimento
 
-O resultado dos kernels é verificado bit a bit contra `ImprovedNoise` vanilla para seeds e coordenadas determinísticas. Isso confirma a equivalência numérica, não um ganho de velocidade. Os resultados de perfil antes/depois ainda precisam ser medidos; consulte [PERFORMANCE.md](./PERFORMANCE.md).
+```text
+./gradlew build      # compila e roda os testes
+./gradlew runClient
+```
 
-Ainda não há otimizações de alocação por Mixin. No vanilla 1.21.1, `BlockCollisions` já reutiliza um único `MutableBlockPos` durante cada varredura; reutilizar listas sem identificar um ponto quente e suas regras de escape seria inseguro. Não há backend C++; ele só deve ser considerado se um perfil posterior demonstrar uma conta numérica cara e vetorizável em lote.
-
-O mod não modifica dados salvos, seeds, mecânicas, ticks de entidades ou a geração de chunks. Reduzir distância de renderização pode ajudar a carga gráfica, mas não acelera o servidor ou a geração de terreno. Nenhum ganho é prometido sem medições no mesmo cenário e hardware.
+Medições e argumentos de JVM sugeridos: veja [PERFORMANCE.md](PERFORMANCE.md).
