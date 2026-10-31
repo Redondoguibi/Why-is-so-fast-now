@@ -1,25 +1,21 @@
+# Why is so fast now?
 
-Installation information
-=======
+Mod de desempenho experimental para Minecraft Java 1.21.1 e NeoForge.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+## Ruído
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+Há um kernel escalar Java sem alocações por amostra e uma implementação opcional com a Vector API do Java 21. Ambos substituem somente o cálculo dos oito produtos escalares usados pela interpolação do ruído Perlin. A ordem das operações e a interpolação vanilla são preservadas.
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+As opções `scalarNoise` e `vectorNoise` ficam desativadas por padrão até que um perfil Spark e os testes de equivalência justifiquem ativá-las. Se ambas estiverem habilitadas, o kernel vetorial tem prioridade; se o módulo `jdk.incubator.vector` não estiver disponível, o mod usa o kernel escalar quando habilitado e, caso contrário, deixa o método vanilla executar.
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+## Desempenho adaptativo do cliente
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+O mod monitora o FPS enquanto um mundo está aberto. Se ficar abaixo do alvo por três amostras consecutivas, reduz a distância de renderização em um chunk. Quando o FPS supera o alvo mais a margem de recuperação por dez amostras, aumenta-a gradualmente até o valor preferido. O recurso pode ser desligado na tela de configuração.
+
+## Limites e próximos passos
+
+O resultado dos kernels é verificado bit a bit contra `ImprovedNoise` vanilla para seeds e coordenadas determinísticas. Isso confirma a equivalência numérica, não um ganho de velocidade. Os resultados de perfil antes/depois ainda precisam ser medidos; consulte [PERFORMANCE.md](./PERFORMANCE.md).
+
+Ainda não há otimizações de alocação por Mixin. No vanilla 1.21.1, `BlockCollisions` já reutiliza um único `MutableBlockPos` durante cada varredura; reutilizar listas sem identificar um ponto quente e suas regras de escape seria inseguro. Não há backend C++; ele só deve ser considerado se um perfil posterior demonstrar uma conta numérica cara e vetorizável em lote.
+
+O mod não modifica dados salvos, seeds, mecânicas, ticks de entidades ou a geração de chunks. Reduzir distância de renderização pode ajudar a carga gráfica, mas não acelera o servidor ou a geração de terreno. Nenhum ganho é prometido sem medições no mesmo cenário e hardware.

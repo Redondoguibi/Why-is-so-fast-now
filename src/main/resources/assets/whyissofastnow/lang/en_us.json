@@ -1,13 +1,13 @@
 {
-  "itemGroup.whyissofastnow": "Example Mod Tab",
-  "block.whyissofastnow.example_block": "Example Block",
-  "item.whyissofastnow.example_item": "Example Item",
-
-  "whyissofastnow.configuration.title": "Why is so fast now? Configs",
-  "whyissofastnow.configuration.section.whyissofastnow.common.toml": "Why is so fast now? Configs",
-  "whyissofastnow.configuration.section.whyissofastnow.common.toml.title": "Why is so fast now? Configs",
-  "whyissofastnow.configuration.items": "Item List",
-  "whyissofastnow.configuration.logDirtBlock": "Log Dirt Block",
-  "whyissofastnow.configuration.magicNumberIntroduction": "Magic Number Text",
-  "whyissofastnow.configuration.magicNumber": "Magic Number"
+  "whyissofastnow.configuration.title": "Why is so fast now? Settings",
+  "whyissofastnow.configuration.section.whyissofastnow-common.toml": "Performance kernels",
+  "whyissofastnow.configuration.section.whyissofastnow-common.toml.title": "Performance kernels",
+  "whyissofastnow.configuration.scalarNoise": "Scalar noise kernel",
+  "whyissofastnow.configuration.vectorNoise": "Vector API noise kernel",
+  "whyissofastnow.configuration.section.whyissofastnow-client.toml": "Adaptive performance",
+  "whyissofastnow.configuration.section.whyissofastnow-client.toml.title": "Adaptive performance",
+  "whyissofastnow.configuration.adaptiveRenderDistance": "Adaptive render distance",
+  "whyissofastnow.configuration.targetFps": "Target FPS",
+  "whyissofastnow.configuration.recoveryFpsMargin": "Recovery FPS margin",
+  "whyissofastnow.configuration.minRenderDistance": "Minimum render distance"
 }

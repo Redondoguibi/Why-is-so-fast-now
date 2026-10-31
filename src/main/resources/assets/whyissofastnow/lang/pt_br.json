@@ -1,0 +1,13 @@
+{
+  "whyissofastnow.configuration.title": "Why is so fast now? Configurações",
+  "whyissofastnow.configuration.section.whyissofastnow-common.toml": "Núcleos de desempenho",
+  "whyissofastnow.configuration.section.whyissofastnow-common.toml.title": "Núcleos de desempenho",
+  "whyissofastnow.configuration.scalarNoise": "Núcleo escalar de ruído",
+  "whyissofastnow.configuration.vectorNoise": "Núcleo de ruído da Vector API",
+  "whyissofastnow.configuration.section.whyissofastnow-client.toml": "Desempenho adaptativo",
+  "whyissofastnow.configuration.section.whyissofastnow-client.toml.title": "Desempenho adaptativo",
+  "whyissofastnow.configuration.adaptiveRenderDistance": "Distância de renderização adaptativa",
+  "whyissofastnow.configuration.targetFps": "FPS alvo",
+  "whyissofastnow.configuration.recoveryFpsMargin": "Margem de FPS para recuperação",
+  "whyissofastnow.configuration.minRenderDistance": "Distância mínima de renderização"
+}
