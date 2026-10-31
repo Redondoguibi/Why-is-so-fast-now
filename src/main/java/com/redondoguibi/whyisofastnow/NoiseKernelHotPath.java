@@ -1,9 +1,12 @@
 package com.redondoguibi.whyisofastnow;
 
+import java.util.Optional;
+
 /**
  * The first registered hot path, selecting scalar or optional vector noise from config.
  *
- * <p>Noise remains vanilla unless an explicit config toggle enables this hook.</p>
+ * <p>Noise remains vanilla unless an explicit config toggle enables this hook. No Spark profile
+ * has yet justified this existing optimization, so it deliberately reports no evidence.</p>
  */
 public final class NoiseKernelHotPath implements HotPath {
     @Override
@@ -19,5 +22,10 @@ public final class NoiseKernelHotPath implements HotPath {
     @Override
     public void apply() {
         NoiseKernels.refreshFromConfig();
+    }
+
+    @Override
+    public Optional<HotPathEvidence> evidence() {
+        return Optional.empty();
     }
 }

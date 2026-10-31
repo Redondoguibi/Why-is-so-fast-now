@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HotPathRegistryTest {
@@ -30,7 +31,30 @@ class HotPathRegistryTest {
         assertThrows(IllegalArgumentException.class, () -> registry.register(path("noise", false)));
     }
 
+    @Test
+    void forEachIncludesDisabledPathsAndTheirEvidence() {
+        HotPathRegistry registry = new HotPathRegistry();
+        HotPathEvidence evidence = new HotPathEvidence(
+                "https://spark.lucko.me/example",
+                "noise occupied 31% of sampled generation CPU",
+                "implement behind a disabled-by-default toggle",
+                "NoiseKernelParityTest");
+        HotPath candidate = path("noise", false, evidence);
+        registry.register(candidate);
+        List<HotPath> visited = new ArrayList<>();
+
+        registry.forEach(visited::add);
+
+        assertEquals(List.of(candidate), visited);
+        assertEquals(evidence, visited.getFirst().evidence().orElseThrow());
+        assertTrue(new NoiseKernelHotPath().evidence().isEmpty());
+    }
+
     private static HotPath path(String id, boolean enabled) {
+        return path(id, enabled, null);
+    }
+
+    private static HotPath path(String id, boolean enabled, HotPathEvidence evidence) {
         return new HotPath() {
             @Override
             public String id() {
@@ -44,6 +68,11 @@ class HotPathRegistryTest {
 
             @Override
             public void apply() {
+            }
+
+            @Override
+            public java.util.Optional<HotPathEvidence> evidence() {
+                return java.util.Optional.ofNullable(evidence);
             }
         };
     }

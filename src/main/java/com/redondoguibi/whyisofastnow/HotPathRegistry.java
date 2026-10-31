@@ -25,13 +25,28 @@ public final class HotPathRegistry {
         paths.add(hotPath);
     }
 
-    /** Visits only enabled paths in registration order. */
-    public void forEachEnabled(Consumer<HotPath> consumer) {
+    /**
+     * Visits every registered path, including disabled paths without profile evidence.
+     *
+     * <p>Including inactive hooks is necessary for reviewing the complete optimization inventory
+     * rather than only the optimizations currently running.</p>
+     */
+    public void forEach(Consumer<HotPath> consumer) {
         Objects.requireNonNull(consumer, "consumer");
         List<HotPath> snapshot;
         synchronized (this) {
             snapshot = List.copyOf(paths);
         }
-        snapshot.stream().filter(HotPath::shouldEnable).forEach(consumer);
+        snapshot.forEach(consumer);
+    }
+
+    /** Visits only enabled paths in registration order. */
+    public void forEachEnabled(Consumer<HotPath> consumer) {
+        Objects.requireNonNull(consumer, "consumer");
+        forEach(hotPath -> {
+            if (hotPath.shouldEnable()) {
+                consumer.accept(hotPath);
+            }
+        });
     }
 }

@@ -25,6 +25,10 @@ O recurso é desligado por padrão. Quando ativado, monitora o FPS enquanto um m
 
 Use `/whyfast status` para ver os toggles e a disponibilidade da Vector API. `/whyfast benchmark` executa um teste local de 200 iterações de aquecimento e 2.000 de medição com lotes de 256 amostras; não representa uma medição Spark de geração de mundo.
 
+## Próximas otimizações
+
+Não escolha o próximo hotspot por intuição: siga o [guia de perfil Spark](./SPARK_WORKFLOW.md) para capturar, comparar e registrar evidências antes de propor uma otimização.
+
 ## Limites e próximos passos
 
 O resultado dos kernels é verificado bit a bit contra `ImprovedNoise` vanilla para uma seed e coordenadas determinísticas. Isso confirma a equivalência numérica, não um ganho de velocidade. Os resultados de perfil antes/depois ainda precisam ser medidos; consulte [PERFORMANCE.md](./PERFORMANCE.md).

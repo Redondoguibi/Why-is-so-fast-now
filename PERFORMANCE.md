@@ -1,5 +1,7 @@
 # Perfil e opções de desempenho
 
+Para o procedimento reproduzível de captura, registro e decisão de hotspots, siga [SPARK_WORKFLOW.md](./SPARK_WORKFLOW.md). O script `scripts/Save-SparkProfile.ps1` acrescenta referências ao índice `profiles/spark/index.csv`.
+
 ## Estado das medições
 
 | Cenário | Antes (Spark) | Depois (Spark) | Estado |
@@ -51,6 +53,17 @@ Sem esse módulo (ou se a classe vetorial não puder ser carregada), o mod não 
 - Os toggles de ruído estão desligados por padrão até haver resultado Spark de antes/depois.
 - Não foi adicionado Mixin para reaproveitar listas ou posições além do ruído: o ponto escolhido deve aparecer como hotspot e ter análise de escape/concorrência. O vanilla já mantém `BlockPos.MutableBlockPos` em `BlockCollisions`.
 - C++/FFM não foi implementado. Só será reavaliado se Spark mostrar uma conta numérica cara que aceite lote grande o bastante para compensar a travessia entre Java e nativo.
+
+## Hotspots candidatos e decisão
+
+Registre um candidato por linha. Não marque uma implementação como aprovada sem link para perfil baseline e perfil posterior comparáveis. Para otimizações existentes sem medição Spark, mantenha a decisão como pendente e os toggles desligados.
+
+| HotPath ID | Cenário e perfil baseline | Método / evidência observada | Decisão (implementar/adiar/rejeitar) | Paridade bit a bit | Perfil depois / resultado |
+|---|---|---|---|---|---|
+| `noise-kernel` | Pendente; sem perfil Spark | Ainda não há evidência Spark para ruído | Pendente | Testes de equivalência existem; ganho não medido | Pendente |
+|  |  |  |  |  |  |
+
+Ao registrar evidência em código, cada `HotPath` pode retornar `Optional<HotPathEvidence>` contendo a referência do perfil, observação medida, decisão e teste de paridade. Um `Optional.empty()` significa explicitamente que não há justificativa Spark registrada; consulte todos os caminhos com `HotPathRegistry.forEach`, inclusive os que estão desativados.
 
 ## JMH de kernels
 
