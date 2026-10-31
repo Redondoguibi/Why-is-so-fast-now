@@ -13,6 +13,22 @@ public final class Config {
             .comment("Use the optional Java Vector API noise kernel when the module is enabled.")
             .define("vectorNoise", false);
 
+    public static final ModConfigSpec.BooleanValue NATURAL_SPAWNER_HOT_PATH = BUILDER
+            .comment("Reserved for a Spark-justified NaturalSpawner optimization; requires recorded profile evidence.")
+            .define("naturalSpawnerHotPath", false);
+
+    public static final ModConfigSpec.BooleanValue BIOME_MANAGER_HOT_PATH = BUILDER
+            .comment("Reserved for a Spark-justified BiomeManager optimization; requires recorded profile evidence.")
+            .define("biomeManagerHotPath", false);
+
+    public static final ModConfigSpec.BooleanValue FEATURE_CONTEXT_HOT_PATH = BUILDER
+            .comment("Reserved for a Spark-justified feature placement context optimization; requires recorded profile evidence.")
+            .define("featureContextHotPath", false);
+
+    public static final ModConfigSpec.BooleanValue BLOCKABLE_EVENT_LOOP_HOT_PATH = BUILDER
+            .comment("Reserved for a Spark-justified server event loop optimization; requires recorded profile evidence.")
+            .define("blockableEventLoopHotPath", false);
+
     public static final ModConfigSpec.BooleanValue ADAPTIVE_RENDER_DISTANCE = BUILDER
             .comment("Opt in to gradually lowering and restoring render distance based on sampled FPS.")
             .define("adaptiveRenderDistance", false);

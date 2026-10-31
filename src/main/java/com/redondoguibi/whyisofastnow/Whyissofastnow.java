@@ -16,6 +16,10 @@ public class Whyissofastnow {
     public Whyissofastnow(ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         HotPathRegistry.GLOBAL.register(new NoiseKernelHotPath());
+        HotPathRegistry.GLOBAL.register(new NaturalSpawnerHotPath());
+        HotPathRegistry.GLOBAL.register(new BiomeManagerHotPath());
+        HotPathRegistry.GLOBAL.register(new FeatureContextHotPath());
+        HotPathRegistry.GLOBAL.register(new BlockableEventLoopHotPath());
         LOGGER.info("Why is so fast now? loaded");
     }
 }

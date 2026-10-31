@@ -61,9 +61,15 @@ Registre um candidato por linha. Não marque uma implementação como aprovada s
 | HotPath ID | Cenário e perfil baseline | Método / evidência observada | Decisão (implementar/adiar/rejeitar) | Paridade bit a bit | Perfil depois / resultado |
 |---|---|---|---|---|---|
 | `noise-kernel` | Pendente; sem perfil Spark | Ainda não há evidência Spark para ruído | Pendente | Testes de equivalência existem; ganho não medido | Pendente |
+| `natural-spawner` | Nenhum baseline Spark registrado | Caps, categorias de spawn, dificuldade local e consumo de aleatoriedade ainda não foram perfilados | Adiar; toggle desligado e candidato inerte | Sem kernel alternativo; vanilla permanece inalterado | Não aplicável |
+| `biome-manager` | Nenhum baseline Spark registrado | Custo de busca, coordenadas quart e desempates não foram perfilados | Adiar; toggle desligado e candidato inerte | Sem kernel alternativo; vanilla permanece inalterado | Não aplicável |
+| `feature-context` | Nenhum baseline Spark de alocações registrado | Contexto mutável pode reter level/origin/random entre features | Adiar; pooling não implementado | Sem pooling; vanilla permanece inalterado | Não aplicável |
+| `blockable-event-loop` | Nenhum baseline Spark registrado | Filas, espera, wakeups e afinidade de thread não foram perfilados | Adiar; toggle desligado e candidato inerte | Sem alteração de agendamento; vanilla permanece inalterado | Não aplicável |
 |  |  |  |  |  |  |
 
 Ao registrar evidência em código, cada `HotPath` pode retornar `Optional<HotPathEvidence>` contendo a referência do perfil, observação medida, decisão e teste de paridade. Um `Optional.empty()` significa explicitamente que não há justificativa Spark registrada; consulte todos os caminhos com `HotPathRegistry.forEach`, inclusive os que estão desativados.
+
+Os quatro caminhos de servidor estão registrados como candidatos fail-closed. Não há perfil Spark baseline nesta árvore (`profiles/spark/index.csv` contém apenas o cabeçalho), portanto seus toggles estão desligados, `evidence()` permanece vazio e `apply()` não altera comportamento. Os testes confirmam essa inércia; não afirmam paridade de uma otimização que ainda não existe. `NaturalSpawner`, pooling de contexto e `BlockableEventLoop` exigem, além do perfil, testes de consumo aleatório/estado e concorrência antes de qualquer implementação. `BiomeManager` requer comparação exata de resultado e limites de quart.
 
 ## JMH de kernels
 

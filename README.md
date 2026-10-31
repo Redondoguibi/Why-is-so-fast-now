@@ -29,6 +29,8 @@ Use `/whyfast status` para ver os toggles e a disponibilidade da Vector API. `/w
 
 Não escolha o próximo hotspot por intuição: siga o [guia de perfil Spark](./SPARK_WORKFLOW.md) para capturar, comparar e registrar evidências antes de propor uma otimização.
 
+Os candidatos do servidor — `NaturalSpawner`, `BiomeManager`, contexto de posicionamento de features e `BlockableEventLoop` — estão registrados, mas permanecem inertes e com toggles desligados até existir um perfil Spark e uma prova de equivalência apropriada. Veja [PERFORMANCE.md](./PERFORMANCE.md) para decisões e bloqueios atuais.
+
 ## Limites e próximos passos
 
 O resultado dos kernels é verificado bit a bit contra `ImprovedNoise` vanilla para uma seed e coordenadas determinísticas. Isso confirma a equivalência numérica, não um ganho de velocidade. Os resultados de perfil antes/depois ainda precisam ser medidos; consulte [PERFORMANCE.md](./PERFORMANCE.md).
